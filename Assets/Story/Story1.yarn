@@ -1,0 +1,239 @@
+﻿title: Start
+---
+<<declare $rapport = 5>>
+<<declare $score = 0>>
+<<declare $c1 = false>>
+<<declare $c2 = false>>
+<<declare $c3 = false>>
+<<declare $c4 = false>>
+<<declare $c5 = false>>
+<<declare $c6 = false>>
+
+<<jump Beat1>>
+===
+
+title: Beat1
+---
+<<if $rapport >= 5>>
+Lo baru nyampe angkringan. Bayu, Citra, Dimas, Eka, dan Farel udah nongkrong duluan, wedang jahe lo udah dipesenin.
+<<else>>
+Lo nyampe angkringan agak telat. Bayu, Citra, Dimas, Eka, dan Farel udah duduk, obrolan kerasa agak kaku waktu lo dateng.
+<<endif>>
+Bayu: Woy, akhirnya dateng juga! Sini duduk, wedang jahe lo udah dipesenin.
+Citra: Eh gimana proyek lo yang kemarin? Minggu lalu keliatan capek banget mukanya.
+
+-> Gue baru aja dikabarin siang tadi, proyeknya lolos—bulan depan gue naik jabatan!
+    Bayu: Anjir mantap, traktir dong!
+    <<set $rapport = $rapport + 1>>
+    <<set $score = $score + 1>>
+    <<set $c1 = true>>
+    <<jump Beat1Reveal>>
+-> Udah, jangan diomongin deh, capek gue mikirin itu.
+    Citra: Lah, tadi siang WA-an lo semangat banget kok.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat1Reveal>>
+-> Elah, basa-basi mulu sih, kayak gak ada obrolan lain.
+    Dimas: Woy santai, baru juga nanya.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat1Reveal>>
+-> Hah? Proyek yang mana ya, gue lupa.
+    Citra: Lah lo yang cerita minggu lalu, masa lupa sendiri.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat1Reveal>>
+===
+
+title: Beat1Reveal
+---
+Sistem: Siang tadi kamu baru dapet kabar promosi dari atasan. Emosi aslinya adalah Senang.
+<<jump Beat2>>
+===
+
+title: Beat2
+---
+<<if $rapport >= 5>>
+Semua masih histeris denger kabar promosi lo. Tapi abis itu Dimas keceplosan ngomong sesuatu.
+<<else>>
+Suasana masih agak canggung abis obrolan tadi, terus Dimas nyeletuk sesuatu yang bikin makin gak enak.
+<<endif>>
+Dimas: Eh tapi serius nih, walau naik jabatan, gapok lo tetep kalah sama Farel yang kerja di startup kan? Udah keempat kalinya nih gue denger lo dibandingin gitu tiap kumpul.
+Farel: Santai aja kali Dim, jangan diambil hati.
+
+-> Ha ha iya bener, emang gue kalah mulu ya dibanding dia.
+    Dimas: (ketawa makin kenceng, gak sadar itu nyakitin)
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat2Reveal>>
+-> Dim, udah keempat kalinya lo bandingin gue kayak gitu. Mbok jangan diulang-ulang, gak lucu.
+    Dimas: Waduh sori bro, kelewatan gue.
+    <<set $rapport = $rapport + 1>>
+    <<set $score = $score + 1>>
+    <<set $c2 = true>>
+    <<jump Beat2Reveal>>
+-> Eh btw random tapi tadi gue liat kecoa segede jempol di kamar mandi sini.
+    Bayu: Anjir ganti topik mulu lo, tapi oke sih.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat2Reveal>>
+-> Anjir kaget gue, tumben lo notice hal begituan Dim.
+    Dimas: Lah emang kenapa reaksi lo kayak gitu?
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat2Reveal>>
+===
+
+title: Beat2Reveal
+---
+Sistem: Ini bukan pertama kalinya Dimas ngebanding-bandingin, dan malem ini rasanya udah keterlaluan. Emosi aslinya adalah Marah.
+<<jump Beat3>>
+===
+
+title: Beat3
+---
+<<if $rapport >= 5>>
+Abis insiden tadi cair, obrolan balik santai sebentar sebelum Citra mendadak lebih pelan suaranya.
+<<else>>
+Suasana masih agak dingin abis insiden tadi, sampai Citra mendadak lebih pelan suaranya.
+<<endif>>
+Citra: Eh random tapi... bokap gue lagi dirawat, jantungnya kambuh lagi. Gue takut banget tiap malem gini.
+Eka: Astaga Cit, kenapa gak bilang dari tadi...
+
+-> Gue ngerti banget rasanya Cit... bokap gue juga pernah kayak gitu tahun lalu, itu masa paling berat buat gue.
+    Citra: (meluk sekilas) ...makasih ya.
+    <<set $rapport = $rapport + 1>>
+    <<set $score = $score + 1>>
+    <<set $c3 = true>>
+    <<jump Beat3Reveal>>
+-> Yaudah positive thinking aja Cit, pasti sembuh kok.
+    Citra: (maksa senyum, makin nunduk)
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat3Reveal>>
+-> Serius? Kok lo bisa santai cerita gitu sambil ngopi?
+    Citra: Lah maksud lo gimana?
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat3Reveal>>
+-> Anjir gue kaget, gak nyangka lo mikirin itu dari tadi.
+    Citra: (ngangguk pelan, agak canggung)
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat3Reveal>>
+===
+
+title: Beat3Reveal
+---
+Sistem: Cerita Citra ngingetin kamu ke pengalaman serupa waktu bokap kamu sakit tahun lalu. Emosi aslinya adalah Sedih.
+<<jump Beat4>>
+===
+
+title: Beat4
+---
+<<if $rapport >= 5>>
+Biar suasana gak makin berat, Farel coba nyairin obrolan pakai cerita random.
+<<else>>
+Obrolan masih berat, Farel coba nyairin suasana pakai cerita random, walau agak kurang pas timingnya.
+<<endif>>
+Farel: Eh biar rada seger, tadi siang gue gak sengaja liat abang cilok yang sausnya udah item berjamur tapi tetep dipake jualan, gila anjir.
+Bayu: Anjir Farel bikin mual malem-malem woy.
+
+-> Idih, cukup Farel, gue jadi gamau makan lagi.
+    Farel: Nah gitu dong reaksi normal.
+    <<set $rapport = $rapport + 1>>
+    <<set $score = $score + 1>>
+    <<set $c4 = true>>
+    <<jump Beat4Reveal>>
+-> Ha ha lucu banget cerita lo, keren.
+    Farel: Lah ini harusnya bikin jijik bro, bukan lucu.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat4Reveal>>
+-> Serius? Kok lo bisa santai cerita begituan?
+    Farel: Ya gue kan cuma cerita doang, santai kali.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat4Reveal>>
+-> Eh btw ngomong-ngomong bokap gue kemarin cerita soal itu juga.
+    Farel: (bingung nyambungin)
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat4Reveal>>
+===
+
+title: Beat4Reveal
+---
+Sistem: Cerita Farel emang didesain buat bikin geli. Emosi aslinya adalah Jijik.
+<<jump Beat5>>
+===
+
+title: Beat5
+---
+<<if $rapport >= 5>>
+Obrolan udah rame dan cair lagi, sampai Eka yang dari tadi diem tiba-tiba angkat bicara.
+<<else>>
+Di tengah suasana yang masih agak canggung, Eka yang dari tadi diem tiba-tiba angkat bicara.
+<<endif>>
+Eka: Eh gaes, gue mau ngasih tau. Gue kemarin resign dari kerjaan lama, minggu depan gue pindah kerja ke luar kota.
+
+-> HAH SERIUS?? Kok gak bilang-bilang dari kemarin-kemarin, kaget gue!
+    Eka: (ketawa, langsung cerita panjang lebar)
+    <<set $rapport = $rapport + 1>>
+    <<set $score = $score + 1>>
+    <<set $c5 = true>>
+    <<jump Beat5Reveal>>
+-> Oh gitu ya, keren deh.
+    Eka: (agak kecewa) ...oh, gitu doang reaksinya?
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat5Reveal>>
+-> Yah, gue jadi sedih nih ntar lo jauh.
+    Eka: Lah kok lo malah mellow, gue aja masih syok sendiri.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat5Reveal>>
+-> Serius lo? Kok berani banget ambil keputusan sepihak gitu.
+    Eka: Ini keputusan gue sendiri, kenapa lo yang emosi.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat5Reveal>>
+===
+
+title: Beat5Reveal
+---
+Sistem: Kabar dadakan kayak gini emang bikin siapa aja kaget duluan. Emosi aslinya adalah Terkejut.
+<<jump Beat6>>
+===
+
+title: Beat6
+---
+<<if $rapport >= 5>>
+Udah lewat jam 1 malam, satu-satu mulai pamit pulang. Lo jalan sendirian ke motor yang diparkir agak jauh, di gang sempit yang salah satu lampunya mati.
+<<else>>
+Udah lewat jam 1 malam, satu-satu pamit pulang duluan tanpa banyak basa-basi. Lo jalan sendirian ke motor yang diparkir agak jauh, di gang sempit yang salah satu lampunya mati.
+<<endif>>
+
+-> Gue jalan cepet-cepet sambil terus ngelirik ke belakang, jantung dag-dig-dug.
+    Motor akhirnya keliatan, lo langsung naik dan tarik gas—lega banget.
+    <<set $rapport = $rapport + 1>>
+    <<set $score = $score + 1>>
+    <<set $c6 = true>>
+    <<jump Beat6Reveal>>
+-> Gue santai aja jalan pelan-pelan sambil main hp.
+    Lo hampir kepeleset karena gak lihat jalan. Untung gak ada apa-apa, tapi rasanya ganjil.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat6Reveal>>
+-> Gue mempercepat langkah sambil ngomel, "kenapa sih lampu ini mati mulu, nyusahin."
+    Ngomel doang gak bikin langkah lo santai, jantung tetep berdebar.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat6Reveal>>
+-> Gue berhenti sebentar mikirin ulang omongan Dimas tadi.
+    Lo malah berdiri diem di gang gelap, sadar itu bukan waktu yang tepat.
+    <<set $rapport = $rapport - 1>>
+    <<jump Beat6Reveal>>
+===
+
+title: Beat6Reveal
+---
+Sistem: Gang sepi, lampu mati, jam segini—emosi aslinya adalah Takut.
+<<jump Rekap>>
+===
+
+title: Rekap
+---
+Sistem: Malam ini berakhir. Kamu berhasil membaca {$score} dari 6 emosi dengan tepat.
+
+<<if $rapport >= 8>>
+Sistem: Malam ini kerasa kompak—kamu cukup peka baca suasana tanpa ada yang bilang langsung.
+<<elseif $rapport >= 5>>
+Sistem: Lumayan, walau ada satu-dua momen yang kerasa canggung.
+<<else>>
+Sistem: Banyak salah baca malam ini—emosi diri sendiri memang kadang lebih gampang kebaca dari konteks sekitar daripada dari apa yang diucapkan orang.
+<<endif>>
+===
