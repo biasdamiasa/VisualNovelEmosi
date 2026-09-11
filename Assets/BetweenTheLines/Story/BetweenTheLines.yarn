@@ -11,6 +11,35 @@ title: opening
 <<declare $angerKnown = false>>
 <<declare $finalCorrect = false>>
 <<declare $finalAnswer = "">>
+<<chapter "PROLOGUE / BEFORE THE USUAL TABLE">>
+<<intro_begin>>
+NARATOR: Empat teman lama. Empat hidup yang bergerak dengan kecepatan berbeda.
+<<introduce "Bayu" "left">>
+NARATOR: BAYU — SUDAH BEKERJA. Jadwalnya penuh, tapi selalu sempat menghidupkan suasana.
+<<introduce "Citra" "right">>
+NARATOR: CITRA — SUDAH BEKERJA. Perhatian pada hal-hal kecil yang sering dilewatkan orang lain.
+<<introduce "Dimas" "left">>
+NARATOR: DIMAS — SUDAH BEKERJA. Santai saat bicara, meski hidupnya juga tidak selalu rapi.
+<<introduce "Rey" "right">>
+NARATOR: REY — BELUM BEKERJA. Setahun mencari pekerjaan, dan mulai lelah menjelaskan keadaannya.
+
+<<conversation_begin>>
+NARATOR: Menjelang malam, lampu-lampu kafe mulai menyala. Tempat itu sudah menjadi titik temu mereka sejak kuliah.
+<<join "Bayu" "left">>
+Bayu: Gue udah di jalan. Jangan ada yang bilang masih mandi, ya. #mood:joking
+<<join "Citra" "right">>
+Citra: Gue udah dekat kafe. Meja biasa, kan? #mood:neutral
+<<join "Dimas" "left">>
+Dimas: Meja biasa. Gue lima menit lagi nyampe. #mood:casual
+<<join "Rey" "right">>
+Rey: Gue juga otw. #mood:neutral
+Bayu: Akhirnya lengkap juga. Gue kira bakal ada yang batal. #mood:joking
+Citra: Rey, tadi kehujanan? Jaket lu basah. #mood:concerned
+Rey: Sedikit. Nggak apa-apa. #mood:neutral
+Dimas: Duduk dulu. Gue pesenin yang biasa? #mood:casual
+Rey: Boleh. Makasih. #mood:neutral
+NARATOR: Awalnya percakapan berjalan seperti biasa—jalanan macet, kopi yang makin mahal, dan kabar teman-teman lama.
+
 <<chapter "PROLOGUE / THE USUAL TABLE">>
 Bayu: Rey mah masih bebas. Belum ada bos yang ngejar-ngejar. #mood:joking
 Rey: Iya. #mood:neutral
@@ -20,7 +49,7 @@ Rey: ...Bebas banget. #mood:awkward
 
 title: fear1
 ---
-<<chapter "01 / FEAR">>
+<<chapter "Chapter 01">>
 Rey: Kadang gue mikir sih... #mood:worried
 Rey: Kalau beberapa bulan lagi masih begini gimana. #mood:worried
 -> Masih begini maksudnya belum dapat kerja?
@@ -67,15 +96,15 @@ Rey: "Orang ini sebenarnya bisa apa sih?" #mood:worried
 title: fearIdentification
 ---
 <<question "WHAT IS REY FEELING?" "Apa emosi utama yang paling terlihat dari Rey?">>
--> Sadness
+-> Sedih
     <<set $fearKnown = false>>
     <<feedback "fear">>
     <<jump sadnessTrigger>>
--> Fear
+-> Takut
     <<set $fearKnown = true>>
     <<feedback "fear">>
     <<jump sadnessTrigger>>
--> Anger
+-> Marah
     <<set $fearKnown = false>>
     <<feedback "fear">>
     <<jump sadnessTrigger>>
@@ -83,12 +112,12 @@ title: fearIdentification
 
 title: sadnessTrigger
 ---
-<<chapter "02 / SADNESS">>
+<<chapter "Chapter 02">>
 Dimas: Eh, Arga sekarang kerja di Singapura ternyata. #mood:casual
 Citra: Serius? #mood:concerned
 Citra: Cepat banget dia. #mood:concerned
 Bayu: Anak itu emang dari dulu ambisius. #mood:neutral
-Rey: Kayaknya anak-anak kita udah pada jauh ya. #mood:sad
+Rey: Kayaknya anak-anak udah pada jauh ya. #mood:sad
 <<jump sadness1>>
 ===
 
@@ -135,15 +164,15 @@ Rey: Kadang gue lihat aja udah males. #mood:sad
 title: sadnessIdentification
 ---
 <<question "WHAT IS REY FEELING?" "Apa emosi yang paling terlihat dari Rey?">>
--> Fear
+-> Takut
     <<set $sadnessKnown = false>>
     <<feedback "sadness">>
     <<jump angerTrigger>>
--> Anger
+-> Marah
     <<set $sadnessKnown = false>>
     <<feedback "sadness">>
     <<jump angerTrigger>>
--> Sadness
+-> Sedih
     <<set $sadnessKnown = true>>
     <<feedback "sadness">>
     <<jump angerTrigger>>
@@ -151,7 +180,7 @@ title: sadnessIdentification
 
 title: angerTrigger
 ---
-<<chapter "03 / ANGER">>
+<<chapter "Chapter 03">>
 Bayu: Kalau mau, kantor gue lagi buka junior position. #mood:neutral
 Bayu: Gue bisa tanyain HR. #mood:neutral
 Rey: Nggak usah. #mood:defensive
@@ -204,15 +233,15 @@ Rey: Gue udah coba semuanya. #mood:angry
 title: angerIdentification
 ---
 <<question "WHAT IS REY FEELING?" "Apa emosi dominan Rey dalam situasi tadi?">>
--> Anger
+-> Marah
     <<set $angerKnown = true>>
     <<feedback "anger">>
     <<jump clueReview>>
--> Sadness
+-> Sedih
     <<set $angerKnown = false>>
     <<feedback "anger">>
     <<jump clueReview>>
--> Fear
+-> Takut
     <<set $angerKnown = false>>
     <<feedback "anger">>
     <<jump clueReview>>

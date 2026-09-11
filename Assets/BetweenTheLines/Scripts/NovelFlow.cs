@@ -25,9 +25,18 @@ namespace Emotionalaw
         [SerializeField] private GameObject howToScreen;
         [SerializeField] private GameObject novelScreen;
         [SerializeField] private GameObject endScreen;
-        [Header("HUD")]
+        [Header("HUD Display")]
+        [Tooltip("Show the CLUES 0 / 6 counter in the top bar.")]
+        [SerializeField] private bool showClueCounter = true;
+        [Tooltip("Show the current chapter label, for example 01 / FEAR.")]
+        [SerializeField] private bool showChapterLabel = true;
+        [Tooltip("Show the What Helps Next panel on the Ending Screen.")]
+        [SerializeField] private bool showEndingGuidance = true;
+        [SerializeField] private GameObject clueCounter;
+        [SerializeField] private GameObject chapterLabel;
         [SerializeField] private Text clueCountText;
         [SerializeField] private Text chapterText;
+        [SerializeField] private NotesClueIndicator notesClueIndicator;
         [Header("Clue and interpretation popup")]
         [SerializeField] private GameObject popup;
         [SerializeField] private Text popupTitle;
@@ -43,6 +52,7 @@ namespace Emotionalaw
         [SerializeField] private Text endingTitle;
         [SerializeField] private Text endingSupport;
         [SerializeField] private Text endingStats;
+        [SerializeField] private Text endingGuidance;
         [SerializeField] private Button replayButton;
         [SerializeField] private Button startButton;
 
@@ -57,15 +67,24 @@ namespace Emotionalaw
         public Button NotebookClose => notebookClose;
         public bool PopupOpen => popup.activeSelf;
         public bool NotebookOpen => notebook.activeSelf;
+        public bool ShowClueCounter => showClueCounter;
+        public bool ShowChapterLabel => showChapterLabel;
+        public bool ShowEndingGuidance => showEndingGuidance;
+        public bool HasUnreadClue => notesClueIndicator.HasUnreadClue;
 
         private void Awake()
         {
+            ApplyHudVisibility();
             runner.AddCommandHandler<string>("clue", RevealClue);
             runner.AddCommandHandler<string>("feedback", ShowFeedback);
             runner.AddCommandHandler("review", ReviewClues);
             runner.AddCommandHandler<string, string>("question", presenter.SetQuestion);
             runner.AddCommandHandler<string>("chapter", SetChapter);
             runner.AddCommandHandler<string>("ending", ShowEnding);
+            runner.AddCommandHandler("intro_begin", presenter.BeginCharacterIntroductions);
+            runner.AddCommandHandler<string, string>("introduce", presenter.IntroduceCharacter);
+            runner.AddCommandHandler("conversation_begin", presenter.BeginGroupConversation);
+            runner.AddCommandHandler<string, string>("join", presenter.AddCharacterToConversation);
             popupContinue.onClick.AddListener(DismissPopup);
             notebookClose.onClick.AddListener(CloseNotebook);
         }
@@ -78,12 +97,21 @@ namespace Emotionalaw
             startButton.Select();
         }
 
+        private void OnValidate() => ApplyHudVisibility();
+
+        private void ApplyHudVisibility()
+        {
+            if (clueCounter != null) clueCounter.SetActive(showClueCounter);
+            if (chapterLabel != null) chapterLabel.SetActive(showChapterLabel);
+            if (endingGuidance != null) endingGuidance.gameObject.SetActive(showEndingGuidance);
+        }
+
         private void OnDestroy()
         {
             popupDismissed = reviewDismissed = true;
             popupContinue.onClick.RemoveListener(DismissPopup);
             notebookClose.onClick.RemoveListener(CloseNotebook);
-            foreach (string command in new[] { "clue", "feedback", "review", "question", "chapter", "ending" })
+            foreach (string command in new[] { "clue", "feedback", "review", "question", "chapter", "ending", "intro_begin", "introduce", "conversation_begin", "join" })
                 runner.RemoveCommandHandler(command);
         }
 
@@ -124,6 +152,7 @@ namespace Emotionalaw
                 popup.SetActive(false);
                 notebook.SetActive(false);
                 clueCountText.text = "CLUES  0 / 6";
+                notesClueIndicator.ResetIndicator();
                 ShowScreen(novelScreen);
                 await runner.StartDialogue("opening");
             }
@@ -138,7 +167,8 @@ namespace Emotionalaw
             {
                 if (clue.variable != "$" + key) continue;
                 clueCountText.text = "CLUES  " + ClueCount + " / 6";
-                await ShowPopup("CLUE UNLOCKED", clue.description);
+                notesClueIndicator.NotifyClueFound();
+                await ShowPopup("PETUNJUK TERBUKA", clue.description);
                 return;
             }
             throw new ArgumentException("Unknown clue: " + key);
@@ -147,7 +177,7 @@ namespace Emotionalaw
         private YarnTask ShowFeedback(string emotion)
         {
             bool correct = ReadBool("$" + emotion + "Known");
-            return ShowPopup(correct ? "EMOTION IDENTIFIED" : "INTERPRETATION RECORDED",
+            return ShowPopup(correct ? "EMOSI TERIDENTIFIKASI" : "INTERPRETASI TERCATAT",
                 correct ? emotion.ToUpperInvariant() : "Kesimpulanmu telah dicatat. Cerita berlanjut.");
         }
 
@@ -175,8 +205,9 @@ namespace Emotionalaw
             if (IsModalOpen || !novelScreen.activeSelf) return;
             priorSelection = EventSystem.current.currentSelectedGameObject;
             RefreshNotebook();
-            notebookSubtitle.text = "Only the clues you discovered are shown.";
-            notebookCloseLabel.text = "BACK TO CONVERSATION";
+            notesClueIndicator.MarkRead();
+            notebookSubtitle.text = "Hanya petunjuk yang kamu temukan yang ditampilkan.";
+            notebookCloseLabel.text = "KEMBALI KE PERCAKAPAN";
             notebook.SetActive(true);
             notebookClose.Select();
         }
@@ -193,8 +224,8 @@ namespace Emotionalaw
         private async YarnTask ReviewClues()
         {
             RefreshNotebook();
-            notebookSubtitle.text = "Review what you know before drawing your conclusion.";
-            notebookCloseLabel.text = "CONTINUE TO FINAL DEDUCTION";
+            notebookSubtitle.text = "Periksa kembali petunjuk yang kamu punya sebelum menarik kesimpulan.";
+            notebookCloseLabel.text = "LANJUT KE KESIMPULAN FINAL";
             reviewDismissed = false;
             notebook.SetActive(true);
             notebookClose.Select();
@@ -205,14 +236,17 @@ namespace Emotionalaw
         {
             bool good = result == "good";
             endingKind.text = good ? "GOOD ENDING" : "BAD ENDING";
-            endingTitle.text = good ? "SEEN" : "MISREAD";
-            endingSupport.text = good ? "You understood what Rey couldn't say directly."
-                : "You saw the reaction, but missed what was underneath it.";
+            endingTitle.text = good ? "DIPAHAMI" : "SALAH DIPAHAMI";
+            endingSupport.text = good ? "Kamu memahami apa yang Rey tidak mampu ungkapkan secara langsung."
+                : "Kamu melihat reaksinya, tetapi tidak menangkap apa yang ada di baliknya.";
+            endingGuidance.text = good
+                ? "WHAT HELPS NEXT\n\n• Dengarkan tanpa buru-buru memberi solusi.\n\n• Validasi: ‘Kedengarannya ini berat buat lu.’\n\n• Tanyakan: ‘Lu ingin didengar atau dibantu mencari langkah?’\n\n• Jika ini terus mengganggu keseharian, dukung ia mencari bantuan profesional."
+                : "COBA PENDEKATAN LAIN\n\n• Hindari menyimpulkan perasaan seseorang terlalu cepat.\n\n• Ajukan pertanyaan terbuka dan dengarkan jawabannya.\n\n• Validasi perasaannya sebelum menawarkan solusi.\n\n• Ajak bicara lagi ketika ia sudah siap.";
             endingStats.text = "Clues found                       " + ClueCount + " / 6\n\n"
-                + "Fear                                    " + (ReadBool("$fearKnown") ? "Identified" : "Missed") + "\n\n"
-                + "Sadness                              " + (ReadBool("$sadnessKnown") ? "Identified" : "Missed") + "\n\n"
-                + "Anger                                  " + (ReadBool("$angerKnown") ? "Identified" : "Missed") + "\n\n"
-                + "Final emotion                     " + ReadString("$finalAnswer");
+                + "Takut                              " + (ReadBool("$fearKnown") ? "Teridentifikasi" : "Terlewat") + "\n\n"
+                + "Sedih                              " + (ReadBool("$sadnessKnown") ? "Teridentifikasi" : "Terlewat") + "\n\n"
+                + "Marah                              " + (ReadBool("$angerKnown") ? "Teridentifikasi" : "Terlewat") + "\n\n"
+                + "Kesimpulan Emosi                   " + ReadString("$finalAnswer");
             ShowScreen(endScreen);
             replayButton.Select();
         }

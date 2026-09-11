@@ -12,11 +12,14 @@ namespace Emotionalaw.Editor
     public static class NovelPlayModeChecks
     {
         private const string ActiveKey = "BTL.PlayModeAcceptance";
+        private const string PreviewEndingKey = "BTL.PreviewGoodEnding";
         private static NovelFlow flow;
         private static NovelPresenter presenter;
         private static int scenario;
         private static bool began;
         private static bool notebookChecked;
+        private static bool unreadBadgeChecked;
+        private static bool clearUnreadOnNextTick;
         private static double nextTick;
         private static double deadline;
         private static List<string> results;
@@ -36,6 +39,16 @@ namespace Emotionalaw.Editor
             EditorApplication.isPlaying = true;
         }
 
+        [MenuItem("Tools/Between the Lines/Play to Good Ending Preview")]
+        public static void PlayToGoodEndingPreview()
+        {
+            if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");
+            NovelProjectTools.ValidateReferences();
+            SessionState.SetBool(PreviewEndingKey, true);
+            SessionState.SetBool(ActiveKey, true);
+            EditorApplication.isPlaying = true;
+        }
+
         private static void OnPlayMode(PlayModeStateChange state)
         {
             if (state == PlayModeStateChange.EnteredPlayMode && SessionState.GetBool(ActiveKey, false))
@@ -43,7 +56,7 @@ namespace Emotionalaw.Editor
                 flow = UnityEngine.Object.FindFirstObjectByType<NovelFlow>();
                 presenter = UnityEngine.Object.FindFirstObjectByType<NovelPresenter>();
                 scenario = 0;
-                began = notebookChecked = false;
+                began = notebookChecked = unreadBadgeChecked = clearUnreadOnNextTick = false;
                 results = new List<string>();
                 visited = new HashSet<string>();
                 flow.Runner.onNodeStart.AddListener(OnNode);
@@ -93,13 +106,43 @@ namespace Emotionalaw.Editor
                     if (!visited.Contains(expectedNode)) throw new Exception("Wrong ending script");
                     if (scenario == 1 && visited.Contains("fear2")) throw new Exception("F2 was not skipped");
                     results.Add("PASS: " + NovelProjectTools.CaseNames[scenario] + " via scene buttons; " + count + "/6 clues");
+                    if (SessionState.GetBool(PreviewEndingKey, false))
+                    {
+                        EditorApplication.update -= Tick;
+                        Application.logMessageReceived -= OnLog;
+                        flow.Runner.onNodeStart.RemoveListener(OnNode);
+                        SessionState.SetBool(ActiveKey, false);
+                        SessionState.SetBool(PreviewEndingKey, false);
+                        Debug.Log("BTL Preview: Good Ending reached and left visible in Game View.");
+                        return;
+                    }
                     scenario++;
                     if (scenario == NovelProjectTools.CaseNames.Length) { Finish(null); return; }
                     began = false;
                     visited.Clear();
                     return;
                 }
-                if (flow.PopupOpen) { flow.PopupContinue.onClick.Invoke(); return; }
+                if (clearUnreadOnNextTick)
+                {
+                    clearUnreadOnNextTick = false;
+                    flow.OpenNotebook();
+                    if (!flow.NotebookOpen || flow.HasUnreadClue) throw new Exception("Opening Notes did not clear unread badge");
+                    flow.NotebookClose.onClick.Invoke();
+                    results.Add("PASS: unread clue badge clears after Notes is opened");
+                    return;
+                }
+                if (flow.PopupOpen)
+                {
+                    if (!unreadBadgeChecked && flow.ClueCount > 0)
+                    {
+                        if (!flow.HasUnreadClue) throw new Exception("Unread clue badge did not appear");
+                        unreadBadgeChecked = true;
+                        clearUnreadOnNextTick = true;
+                        results.Add("PASS: unread clue badge appears after a clue is found");
+                    }
+                    flow.PopupContinue.onClick.Invoke();
+                    return;
+                }
                 if (flow.NotebookOpen) { flow.NotebookClose.onClick.Invoke(); return; }
                 if (presenter.IsPresentingLine)
                 {
@@ -131,6 +174,7 @@ namespace Emotionalaw.Editor
             Directory.CreateDirectory("Docs/Validation");
             File.WriteAllLines("Docs/Validation/PlayModeAcceptance.txt", results);
             SessionState.SetBool(ActiveKey, false);
+            SessionState.SetBool(PreviewEndingKey, false);
             Debug.Log("BTL Play Mode: " + (failure ?? "7/7 scenarios PASS; replay between runs and notebook checked.") + "\n" + string.Join("\n", results));
             EditorApplication.isPlaying = false;
         }

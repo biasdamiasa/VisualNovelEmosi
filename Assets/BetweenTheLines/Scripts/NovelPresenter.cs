@@ -89,6 +89,33 @@ namespace Emotionalaw
             foreach (var portrait in portraits) portrait.ResetPortrait();
         }
 
+        public void BeginCharacterIntroductions()
+        {
+            foreach (var portrait in portraits) portrait.HideForIntroduction();
+        }
+
+        public YarnTask IntroduceCharacter(string characterName, string side)
+        {
+            foreach (var portrait in portraits) portrait.HideForIntroduction();
+            foreach (var portrait in portraits)
+                if (portrait.CharacterName.Equals(characterName, StringComparison.OrdinalIgnoreCase))
+                    return portrait.IntroduceAsync(side, true);
+            throw new ArgumentException("Unknown portrait character: " + characterName);
+        }
+
+        public void BeginGroupConversation()
+        {
+            foreach (var portrait in portraits) portrait.HideForIntroduction();
+        }
+
+        public YarnTask AddCharacterToConversation(string characterName, string side)
+        {
+            foreach (var portrait in portraits)
+                if (portrait.CharacterName.Equals(characterName, StringComparison.OrdinalIgnoreCase))
+                    return portrait.IntroduceAsync(side, false);
+            throw new ArgumentException("Unknown portrait character: " + characterName);
+        }
+
         public override YarnTask OnDialogueStartedAsync()
         {
             ResetPresentation();
@@ -115,7 +142,7 @@ namespace Emotionalaw
             foreach (var portrait in portraits) portrait.Present(line.CharacterName ?? "", mood);
             lineActive = typing = true;
             hurry = advance = false;
-            continueText.text = "TAP TO REVEAL";
+            continueText.text = "TAP UNTUK MEMBUKA";
             continueButton.Select();
             float elapsed = 0;
             int count = 0;
@@ -132,7 +159,7 @@ namespace Emotionalaw
             }
             lineText.text = lastLine;
             typing = false;
-            continueText.text = "CONTINUE  >";
+            continueText.text = "LANJUT  >";
             while (!advance && !token.IsNextContentRequested) await YarnTask.Yield();
             lineActive = false;
         }
